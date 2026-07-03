@@ -1,7 +1,7 @@
 ---
-title: "EnglishMatrix Built-in Vocabulary Inventory"
+title: "EnglishMatrix Vocabulary: Verbs, Subjects, Complements"
 sidebarTitle: "Vocabulary"
-description: "Complete inventory of EnglishMatrix's built-in vocabulary: 153 verbs, 134 Spanish conjugations, 96 complements, 22 subjects, 31 places, and 36 time expressions."
+description: "Full inventory of EnglishMatrix's built-in vocabulary: 191 verbs, 190 Spanish conjugations, 96 complements, 22 subjects, 31 places, and 36 time phrases."
 ---
 
 EnglishMatrix ships with a rich built-in vocabulary embedded as static C# lists. All data is compiled directly into the single `.cs` source file and loaded into memory at startup — no database or external files are involved. This page documents what is included and how each category is used at runtime.
@@ -12,11 +12,11 @@ EnglishMatrix ships with a rich built-in vocabulary embedded as static C# lists.
 
 | Category | Count | Used in |
 |---|---|---|
-| `verbList` (total) | **153** | Verb reference table, verb quiz, tense table |
-| — Regular verbs (`IsRegular=true`) | 95 | Verb list mode, verb quiz |
-| — Irregular verbs (`IsRegular=false`) | 58 | Verb list mode, verb quiz |
-| `conjugaciones` (Spanish dictionary) | **134** | Tense table, Spanish sentence output |
-| `verbsForSentences` | **64** | Sentence generation only |
+| `verbList` (total) | **191** | Verb reference table, verb quiz, tense table |
+| — Regular verbs (`IsRegular=true`) | 107 | Verb list mode, verb quiz |
+| — Irregular verbs (`IsRegular=false`) | 84 | Verb list mode, verb quiz |
+| `conjugaciones` (Spanish dictionary) | **190** | Tense table, Spanish sentence output |
+| `verbsForSentences` | **79** | Sentence generation only |
 | `subjects` | **22** | Sentence generation |
 | `complements` | **96** | Sentence generation |
 | `places` | **31** | Sentence generation (optional) |
@@ -70,7 +70,7 @@ Paired with verbs like `drink`.
 
 Examples: `water`, `coffee`, `juice`, `tea`, `cola`, `beer`, `wine`
 
-### `thing` — 38 complements
+### `thing` — 35 complements
 Paired with verbs like `buy`, `find`, `open`, `use`, `save`, `read`, `write`, `watch`, `carry`, `play`, `build`, `break`, `fix`, `send`, `sell`, `choose`, `show`, `clean`, `drive`, `listen`, `upgrade`, `unlock`, `hack`, `install`, `brush`, `comb`, `like`, `paint`, `shop`, `wash`.
 
 Examples: `the weapon`, `the key`, `the bag`, `the sword`, `the shield`, `the map`, `the car`, `the phone`, `the book`, `the game`, `the mission`, `the door`, `the computer`, `the music`, `the house`, `the letter`, `the pen`, `the pencil`, `the paper`, `the notebook`, `the desk`, `the chair`, `the table`, `the bed`, `the bicycle`, `the camera`, `the watch`, `the shoes`, `the shirt`, `the pants`, `clothes`, `a shirt`, `a gift`, `a ticket`, `a movie`
@@ -80,7 +80,7 @@ Paired with verbs like `help`, `love`, `fear`, `miss`, `fight`, `attack`, `defen
 
 Examples: `my friend`, `the enemy`, `my mom`, `my dad`, `my sister`, `my brother`, `my cousin`, `the boss`, `the soldier`, `the student`, `the doctor`, `the teacher`, `the nurse`, `the driver`, `the child`
 
-### `abstract` — 15 complements
+### `abstract` — 18 complements
 Paired with verbs like `need`, `want`, `study`, `feel`, `plan`. Note: the `abstract` type also accepts `thing` and `person` complements via the broadened matching rule.
 
 Examples: `money`, `time`, `help`, `energy`, `English`, `math`, `courage`, `patience`, `happiness`, `love`, `freedom`, `knowledge`, `homework`, `a test`, `music`, `a story`, `the weather`, `a song`
@@ -174,15 +174,12 @@ The `times` list contains 36 entries. When `includeTime = true`, `GenerateSenten
 
 ## Verb coverage gap
 
-According to the `VERB_ANALYSIS_REPORT.md` included with the project, **35 verbs** present in `verbList` do not yet have a corresponding entry in the `conjugaciones` dictionary. This means they will not produce a Spanish conjugation in the tense table mode and will fall back to algorithmically generated (approximate) Spanish forms in sentence generation.
+The `conjugaciones` dictionary (190 entries) and `verbList` (191 entries) are nearly in full alignment. As of the current source, **4 verbs** present in `verbList` do not have a corresponding entry in `conjugaciones`: `hang`, `hit`, `sit`, and `tear`. These verbs will fall back to algorithmically generated (approximate) Spanish forms in sentence generation.
 
-The 35 affected verbs (as of the report date 2026-06-05):
-
-| Type | Verbs |
-|---|---|
-| Regular (18) | `activate`, `add`, `climb`, `close`, `collect`, `complete`, `download`, `install`, `load`, `print`, `test`, `turn`, `type`, `unlock`, `upgrade`, `upload`, `use`, `visit` |
-| Irregular (17) | `be`, `beat`, `become`, `begin`, `blow`, `bring`, `come`, `cost`, `cut`, `do`, `get`, `go`, `have`, `hold`, `hurt`, `keep`, `make`, `mean`, `put`, `ride`, `ring`, `rise`, `say`, `seek`, `set`, `shake`, `shoot`, `shrink`, `shut`, `sink`, `stand`, `steal`, `strike`, `swing`, `wear` |
+Additionally, **3 verbs** (`destroy`, `fear`, `trust`) have entries in `conjugaciones` but are not in `verbList`. These verbs do appear in `verbsForSentences` and are used in sentence generation.
 
 When `BuildSpanishVerb` cannot find a verb in `conjugaciones`, it falls back to a generic programmatic conjugation derived from the Spanish infinitive's ending. See [How the Sentence Engine Handles Missing Conjugations](/reference/sentence-engine#buildspanishverb) for details on the fallback logic.
 
-Additionally, 3 verbs (`laugh`, `cry`, `worry`) have entries in `conjugaciones` but were missing from `verbList` at the time the report was generated. These verbs do appear in `verbsForSentences` and are used in sentence generation.
+<Note>
+  The `VERB_ANALYSIS_REPORT.md` included with the project was generated against an earlier version of the source and reports different counts (153 verbs, 134 conjugations, 64 sentence verbs, 35 missing conjugations). The figures above reflect the current state of `EnglishMatrix.cs`.
+</Note>

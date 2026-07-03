@@ -1,7 +1,7 @@
 ---
 title: "Installing EnglishMatrix on Windows, macOS, and Linux"
 sidebarTitle: "Installation"
-description: "Step-by-step guide to installing the .NET SDK and setting up EnglishMatrix on Windows, macOS, or Linux in under two minutes."
+description: "Step-by-step guide to installing the .NET SDK and running EnglishMatrix on Windows, macOS, or Linux — no NuGet packages or configuration required."
 ---
 
 EnglishMatrix requires only the .NET SDK — there are no NuGet packages to restore, no database to provision, and no environment variables to configure. Once the SDK is available on your machine, a single `dotnet run` command is all it takes to launch the application.
@@ -75,7 +75,7 @@ EnglishMatrix requires only the .NET SDK — there are no NuGet packages to rest
   <Step title="Verify the project file">
     The repository includes `EnglishMatrix.csproj`, which configures the build. Its full contents are:
 
-    ```csharp
+    ```xml
     <Project Sdk="Microsoft.NET.Sdk">
 
       <PropertyGroup>

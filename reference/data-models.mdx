@@ -1,7 +1,7 @@
 ---
-title: "EnglishMatrix Data Models: Word, Complement, VerbEntry, SpanishConj"
+title: "EnglishMatrix Data Models: Word, Complement, VerbEntry"
 sidebarTitle: "Data Models"
-description: "Complete reference for the four C# data models used by EnglishMatrix: Word, Complement, VerbEntry, and SpanishConj, with all properties, types, and valid values."
+description: "Reference for the four C# data models in EnglishMatrix: Word, Complement, VerbEntry, and SpanishConj — all properties, types, and valid values explained."
 ---
 
 EnglishMatrix uses four internal C# classes to represent its vocabulary and conjugation data. All instances are created at startup as static lists embedded directly in the source file — no database or external files are required.
@@ -95,7 +95,7 @@ class Complement
 
 ## `VerbEntry`
 
-`VerbEntry` stores all five morphological forms of a verb plus its Spanish infinitive and regularity flag. All 153 entries live in the static `verbList`. This list is used by the verb reference table, verb quiz, tense table mode, and by `BuildEnglishVerb` when looking up irregular forms.
+`VerbEntry` stores all five morphological forms of a verb plus its Spanish infinitive and regularity flag. All 191 entries live in the static `verbList`. This list is used by the verb reference table, verb quiz, tense table mode, and by `BuildEnglishVerb` when looking up irregular forms.
 
 ```csharp
 class VerbEntry

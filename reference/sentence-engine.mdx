@@ -1,7 +1,7 @@
 ---
-title: "How the EnglishMatrix Sentence Engine Works"
+title: "EnglishMatrix Sentence Engine: GenerateSentence Reference"
 sidebarTitle: "Sentence Engine"
-description: "Technical reference for GenerateSentence, BuildEnglishVerb, and BuildSpanishVerb — the three functions that produce bilingual English/Spanish sentence pairs in EnglishMatrix."
+description: "Technical reference for GenerateSentence, BuildEnglishVerb, and BuildSpanishVerb — the three methods that produce bilingual English/Spanish sentence pairs."
 ---
 
 The sentence engine consists of three static methods: `GenerateSentence`, `BuildEnglishVerb`, and `BuildSpanishVerb`. Together they take a randomly selected subject, verb, and compatible complement and produce a complete bilingual sentence pair with tense label. The engine is used by all sentence generation modes, both quiz modes, and the tense table mode.
@@ -66,7 +66,7 @@ static (string english, string spanish) GenerateSentence(
 ### Selection logic (step by step)
 
 1. **Subject:** A random entry is picked from `subjects` (22 entries).
-2. **Verb:** A random entry is picked from `verbsForSentences` (64 entries).
+2. **Verb:** A random entry is picked from `verbsForSentences` (79 entries).
 3. **Tense:** `forcedTense` is used if set; otherwise `(Tense)rnd.Next(7)`.
 4. **Complement:** If `verb.Accepts != "none"`, the `complements` list is filtered to entries whose `Type` matches `verb.Accepts` (see [Complement compatibility](/reference/data-models#complement-compatibility)). A random compatible complement is chosen from the filtered list. If the list is empty, no complement is added.
 5. **Place:** If `includePlace` is `true` and `rnd.Next(2) == 0`, a random entry from `places` (31 entries) is appended.
@@ -197,20 +197,20 @@ Produces the conjugated Spanish verb phrase for a given English subject and verb
 
 ### Person mapping
 
-| English subject(s) | Mapped person | Fields used |
-|---|---|---|
-| `"I"` | yo (1st singular) | `YoPres`, `YoPast` |
-| `"She"`, `"He"`, `"My mom"`, `"The teacher"`, and all other 3rd-person singulars | él/ella (3rd singular) | `ElPres`, `ElPast` |
-| `"We"`, `"They"`, `"You"` | nosotros/ellos/ustedes | `NosPres`, `NosPast` |
-
-The internal booleans are set as:
+The engine uses only two boolean flags, derived directly from the English subject string:
 
 ```csharp
 bool isYo  = subject.ToLower() == "i";
 bool isNos = subject.ToLower() == "we";
 ```
 
-Any subject that is neither `"i"` nor `"we"` (including `"they"` and `"you"`) uses the `El`/`El` (third-person) fields.
+| English subject(s) | Mapped person | Fields used |
+|---|---|---|
+| `"I"` | yo (1st singular) | `YoPres`, `YoPast` |
+| `"We"` | nosotros (1st plural) | `NosPres`, `NosPast` |
+| All others — `"She"`, `"He"`, `"They"`, `"You"`, `"My mom"`, `"The teacher"`, etc. | él/ella (3rd singular) | `ElPres`, `ElPast` |
+
+`"They"` and `"You"` are **not** `isNos` — they fall through to the default `ElPres`/`ElPast` branch alongside all other non-`"I"`, non-`"We"` subjects.
 
 ### Tense-by-tense formation (when verb is in `conjugaciones`)
 

@@ -1,7 +1,7 @@
 ---
 title: "Generating English Sentences and Questions Across 7 Tenses"
 sidebarTitle: "Sentence Generation"
-description: "Use EnglishMatrix menu options 1 and 2 to generate up to 20 declarative sentences or questions per session, choosing from 7 English verb tenses or random mix."
+description: "Options 1 and 2 generate up to 20 sentences or questions across 7 tenses, each printed as a labeled English–Spanish pair for comprehension practice."
 ---
 
 `ModeGenerate` is the core production engine of EnglishMatrix. Options **1** (sentences) and **2** (questions) both feed into the same `GenerateSentence` engine under the hood — the only difference between them is whether the call passes `SentenceMode.Normal` or `SentenceMode.Question`. Every sentence is printed as an English–Spanish pair labelled with the active tense.
