@@ -1,0 +1,69 @@
+---
+title: "Verb Forms Quiz: Test Past, Participle, and Gerund"
+sidebarTitle: "Verb Quiz"
+description: "Menu options 7 and 8 quiz you on English verb forms — type the past tense, past participle, and gerund for randomly selected regular or irregular verbs."
+---
+
+`ModeVerbQuiz` (options **7** and **8**) randomly draws verbs from `verbList` and asks you to produce three morphological forms for each one. Option 7 draws from the **regular** verb pool; option 8 draws from the **irregular** verb pool. Each verb is presented with its Spanish infinitive so you always know which word is being tested.
+
+## Quiz flow
+
+<Steps>
+  <Step title="A verb is displayed with its Spanish translation">
+    EnglishMatrix picks a random verb from the selected pool and prints it:
+    ```
+    Verbo: eat (comer)
+    ```
+  </Step>
+  <Step title="Enter the past tense form">
+    Type the simple past at the `Pasado (past):` prompt.
+  </Step>
+  <Step title="Enter the past participle">
+    Type the past participle at the `Participio (participle):` prompt.
+  </Step>
+  <Step title="Enter the gerund">
+    Type the -ing form at the `Gerundio (gerund -ing):` prompt.
+  </Step>
+  <Step title="Immediate feedback">
+    If all three fields match, EnglishMatrix prints `✅ ¡Perfecto!`. Any incorrect field is flagged individually with `✗` and the correct answer is shown next to it.
+  </Step>
+  <Step title="Continue or quit">
+    The next verb appears automatically. Type `salir` at any prompt to end the session and see your final score.
+  </Step>
+</Steps>
+
+## Sample interaction
+
+```text
+=== Quiz — Verbos Irregulares ===
+Se muestra el infinitivo. Escribe pasado, participio y gerundio.
+Escribe 'salir' para terminar.
+
+Verbo: eat (comer)
+  Pasado     (past):        ate
+  Participio (participle):  eaten
+  Gerundio   (gerund -ing): eating
+  ✅ ¡Perfecto!
+
+Verbo: write (escribir)
+  Pasado     (past):        writed
+  Participio (participle):  written
+  Gerundio   (gerund -ing): writing
+  ✗ Pasado:     correcto = wrote
+```
+
+## Scoring
+
+After typing `salir`, EnglishMatrix shows your final tally. One full verb (all three forms correct) counts as one point:
+
+| Score | Message |
+|-------|---------|
+| ≥ 80 % | `¡Excelente! 🏆` |
+| 50 – 79 % | `¡Bien! Sigue practicando 💪` |
+| < 50 % | `¡No te rindas! Keep going! 🎮` |
+
+Comparison is case-insensitive, so `ATE`, `ate`, and `Ate` are all accepted.
+
+<Tip>
+  Review the verb list (option 5 for regular, option 6 for irregular) before attempting the quiz. The irregular verb list is especially helpful for tricky forms like `fly → flew → flown → flying` or `forget → forgot → forgotten → forgetting` that don't follow any predictable pattern.
+</Tip>

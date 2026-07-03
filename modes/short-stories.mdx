@@ -1,0 +1,80 @@
+---
+title: "Short English Stories with Bilingual Support and Level Filters"
+sidebarTitle: "Short Stories"
+description: "Menu option 10 offers a library of short English reading passages filterable by CEFR level (A1, A2, C1), with options to read randomly, browse by number, or list all titles."
+---
+
+`ModeShortStories` (option **10**) provides a built-in library of short bilingual reading passages written to be accessible for Spanish-speaking English learners. From the stories sub-menu you can read a random story, pick one by number, filter the library by CEFR level, or browse the full title list — all without leaving the application.
+
+## Stories sub-menu
+
+```text
+╔══════════════════════════════════════════╗
+║   📖 Historias cortas en inglés          ║
+╠══════════════════════════════════════════╣
+║  1. Leer una historia aleatoria          ║
+║  2. Elegir historia por número           ║
+║  3. Filtrar por nivel (A1 / A2 / C1)     ║
+║  4. Ver lista de todas las historias     ║
+║  0. Volver al menú principal             ║
+╚══════════════════════════════════════════╝
+```
+
+## Story options
+
+<Accordion title="Opción 1 — Historia aleatoria">
+  Picks a story at random from the full library (all levels combined) and displays it immediately. This is the fastest way to get a reading warm-up without choosing a specific text.
+</Accordion>
+
+<Accordion title="Opción 2 — Elegir por número">
+  Prompts for a story ID between `1` and the total story count. If the ID exists in the library the story is displayed; otherwise EnglishMatrix shows `Historia no encontrada` and returns to the sub-menu. Use option 4 first to see which IDs are available.
+</Accordion>
+
+<Accordion title="Opción 3 — Filtrar por nivel">
+  Prompts for a CEFR level — enter `A1`, `A2`, or `C1`. EnglishMatrix lists all stories at that level with their IDs, then lets you pick one by entering its number. If no stories exist for the entered level, a notice is shown and you are returned to the sub-menu.
+</Accordion>
+
+<Accordion title="Opción 4 — Ver lista">
+  Prints a full index of every story in the library, showing each story's ID, level, and title in a compact list — for example:
+  ```
+    [01] (A2) Daniel el doctor
+    [02] (A1) Julieta aprende inglés
+    [04] (C1) Valeria: Speak with Power
+  ```
+  Use this option to find a story topic that interests you before selecting it by number with option 2.
+</Accordion>
+
+<Accordion title="Opción 0 — Volver">
+  Returns to the main EnglishMatrix menu without reading a story.
+</Accordion>
+
+## Story format
+
+Every story is displayed in a bordered frame produced by `PrintStory`:
+
+```text
+╔══════════════════════════════════════════╗
+║  Historia #01  —  Nivel: A2             ║
+║  Daniel el doctor                        ║
+╚══════════════════════════════════════════╝
+
+Hello! My name is Daniel. I am 38 years old, and I am from Colombia.
+In my country, I worked as a doctor in a very famous clinic.
+...
+```
+
+Press **Enter** after reading to return to the stories sub-menu.
+
+## CEFR levels
+
+The library covers three levels:
+
+| Level | Name | Description |
+|-------|------|-------------|
+| **A1** | Beginner | Very short, simple passages using high-frequency vocabulary and present tense. Most stories in the library are at this level. |
+| **A2** | Elementary | Slightly longer narratives that introduce past tense and more varied sentence structures. |
+| **C1** | Advanced | Complex stories with multiple tenses, subordinate clauses, and richer vocabulary — included for stretch reading once A1/A2 feels comfortable. |
+
+<Tip>
+  Read a story and note which tenses and verbs appear most frequently. Then jump to options 1 or 2 to generate sentences in that same tense, or to option 3 to test yourself on translating them. This reading-to-production loop reinforces comprehension and active use of the same grammar at the same time.
+</Tip>

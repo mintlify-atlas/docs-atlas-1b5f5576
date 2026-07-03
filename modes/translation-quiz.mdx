@@ -1,0 +1,63 @@
+---
+title: "Translation Quiz: Practice English-to-Spanish with Self-Scoring"
+sidebarTitle: "Translation Quiz"
+description: "Menu options 3 and 4 present EnglishMatrix sentences in English; you type the Spanish translation, self-score each answer, and see a final percentage at the end."
+---
+
+`ModeQuiz` (options **3** and **4**) drives an open-ended translation drill. Option 3 uses declarative sentences (`SentenceMode.Normal`); option 4 uses questions (`SentenceMode.Question`). Both modes share the exact same scoring loop — the only difference is the shape of the English prompt you see.
+
+## How the quiz works
+
+<Steps>
+  <Step title="EnglishMatrix generates an English sentence">
+    A random sentence (or question) is produced by the same `GenerateSentence` engine used in options 1 and 2, and printed on screen as the English prompt.
+  </Step>
+  <Step title="Type your Spanish translation">
+    Write your translation at the `Tu traducción:` prompt and press **Enter**.
+  </Step>
+  <Step title="The correct translation is revealed">
+    EnglishMatrix prints `Respuesta:` followed by the correct Spanish sentence so you can compare it to your answer.
+  </Step>
+  <Step title="Self-report your result">
+    Enter `s` (sí) if you got it right, or `n` (no) if you did not. Your input increments the correct-answer counter.
+  </Step>
+  <Step title="Continue or quit">
+    The next sentence appears automatically. Type `salir` at the `Tu traducción:` prompt at any time to end the session and see your score.
+  </Step>
+</Steps>
+
+## Sample session
+
+```text
+=== Quiz — Oraciones ===
+Escribe 'salir' para terminar.
+
+EN: [Presente simple] The hero fights the enemy in the city.
+Tu traducción: El héroe lucha contra el enemigo en la ciudad.
+Respuesta: [Presente simple] El héroe lucha contra el enemigo en la ciudad.
+¿La tuviste bien? (s/n): s
+
+EN: [Futuro simple] Will we travel to the forest tomorrow?
+Tu traducción:
+```
+
+## Scoring
+
+When you type `salir`, EnglishMatrix tallies your self-reported results and prints a final summary:
+
+```text
+Resultado: 7/10 (70%)
+¡Bien! Sigue practicando 💪
+```
+
+The feedback message depends on your percentage:
+
+| Score | Message |
+|-------|---------|
+| ≥ 80 % | `¡Excelente! 🏆` |
+| 50 – 79 % | `¡Bien! Sigue practicando 💪` |
+| < 50 % | `¡No te rindas! Keep going! 🎮` |
+
+<Tip>
+  Run option 1 or 2 first to see plenty of example sentences in the tense you want to practice, then switch to option 3 or 4 to test yourself on that same vocabulary while it's still fresh.
+</Tip>

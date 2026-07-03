@@ -1,0 +1,216 @@
+---
+title: "Supported English Verb Tenses in EnglishMatrix"
+sidebarTitle: "Verb Tenses"
+description: "Reference for all 7 English verb tenses supported by EnglishMatrix — with formation rules, English examples for I/She/We, and the Spanish tense equivalents used in output."
+---
+
+EnglishMatrix supports 7 tenses defined in the `Tense` enum. Every mode that involves sentences — generation, quiz, and the tense table — uses these tenses. Tenses are randomly selected during sentence generation unless a specific tense is forced via the `forcedTense` parameter.
+
+```csharp
+enum Tense
+{
+    PresentSimple,      // I eat
+    PresentContinuous,  // I am eating
+    PastSimple,         // I ate
+    PastContinuous,     // I was eating
+    FutureSimple,       // I will eat
+    PresentPerfect,     // I have eaten
+    Conditional         // I would eat
+}
+```
+
+Each tense is identified in console output with its Spanish label, produced by `TenseName()`:
+
+```csharp
+static string TenseName(Tense t) => t switch
+{
+    Tense.PresentSimple     => "Presente simple",
+    Tense.PresentContinuous => "Presente continuo",
+    Tense.PastSimple        => "Pasado simple",
+    Tense.PastContinuous    => "Pasado continuo",
+    Tense.FutureSimple      => "Futuro simple",
+    Tense.PresentPerfect    => "Presente perfecto",
+    Tense.Conditional       => "Condicional",
+    _ => ""
+};
+```
+
+---
+
+## PresentSimple
+
+**Spanish label:** Presente simple
+
+**Formation:** Subject + base verb (+ `-s`/`-es`/`-ies` for 3rd-person singular)
+
+| Subject | English form | Spanish form |
+|---|---|---|
+| I | I eat | como |
+| She/He | She eats | come |
+| We | We eat | comemos |
+
+**Notes on third-person singular:** `ConjugateEnglishPresent` applies the following rules for 3rd-person subjects:
+
+- Verb ends in `-y` preceded by a consonant → drop `-y`, add `-ies` (e.g., `study` → `studies`)
+- Verb ends in `-y` preceded by a vowel → add `-s` (e.g., `play` → `plays`)
+- Verb ends in `-s`, `-sh`, `-ch`, `-x`, or `-o` → add `-es` (e.g., `watch` → `watches`)
+- All other verbs → add `-s` (e.g., `eat` → `eats`)
+
+In question mode (`SentenceMode.Question`), the auxiliary `Do` / `Does` is placed before the subject and the verb reverts to its bare infinitive form.
+
+---
+
+## PresentContinuous
+
+**Spanish label:** Presente continuo
+
+**Formation:** `am`/`is`/`are` + gerund (-ing form)
+
+| Subject | English form | Spanish form |
+|---|---|---|
+| I | I am eating | estoy comiendo |
+| She/He | She is eating | está comiendo |
+| We | We are eating | estamos comiendo |
+
+**Notes:** The correct `be` form is selected in `BuildEnglishVerb`:
+- `I` → `am`
+- Third-person singular subjects (she, he, my mom, the teacher, etc.) → `is`
+- `we`, `they`, `you` → `are`
+
+In Spanish, `BuildSpanishVerb` uses `estoy`/`está`/`estamos` + the computed gerundio (e.g., `comiendo`, `corriendo`). In question mode the auxiliary `Is`/`Am`/`Are` is inverted before the subject.
+
+---
+
+## PastSimple
+
+**Spanish label:** Pasado simple
+
+**Formation:** Past form of the verb (regular: `-ed`; irregular: looked up from `verbList`)
+
+| Subject | English form | Spanish form |
+|---|---|---|
+| I | I ate | comí |
+| She/He | She ate | comió |
+| We | We ate | comimos |
+
+**Notes:** `GetPast()` looks up the `Past` field from `verbList`. If a verb is not in `verbList`, it falls back to appending `-ed`. In question mode, auxiliary `Did` is placed before the subject and the verb reverts to its bare infinitive.
+
+---
+
+## PastContinuous
+
+**Spanish label:** Pasado continuo
+
+**Formation:** `was`/`were` + gerund (-ing form)
+
+| Subject | English form | Spanish form |
+|---|---|---|
+| I | I was eating | estaba comiendo |
+| She/He | She was eating | estaba comiendo |
+| We | We were eating | estábamos comiendo |
+
+**Notes:** The correct `was`/`were` form is selected:
+- `I`, `he`, `she`, `it`, and third-person singular subjects → `was`
+- `we`, `they`, `you` → `were`
+
+In Spanish, `BuildSpanishVerb` uses `estaba`/`estaba`/`estábamos` + the gerundio. In question mode, `Was`/`Were` is inverted before the subject.
+
+---
+
+## FutureSimple
+
+**Spanish label:** Futuro simple
+
+**Formation (English):** `will` + bare infinitive
+
+**Formation (Spanish):** `ir a` + infinitivo (`voy a`/`va a`/`vamos a`)
+
+| Subject | English form | Spanish form |
+|---|---|---|
+| I | I will eat | voy a comer |
+| She/He | She will eat | va a comer |
+| We | We will eat | vamos a comer |
+
+**Notes:** EnglishMatrix uses the periphrastic future (`ir a + infinitivo`) in Spanish rather than the synthetic future tense, which is the natural equivalent at A1–A2 level. In question mode, `Will` is inverted before the subject.
+
+---
+
+## PresentPerfect
+
+**Spanish label:** Presente perfecto
+
+**Formation (English):** `have`/`has` + past participle
+
+**Formation (Spanish):** `he`/`ha`/`hemos` + participio pasado
+
+| Subject | English form | Spanish form |
+|---|---|---|
+| I | I have eaten | he comido |
+| She/He | She has eaten | ha comido |
+| We | We have eaten | hemos comido |
+
+**Notes:** `GetParticiple()` looks up the `Participle` field from `verbList`. Spanish past participles are computed by `GetSpanishPastParticiple()`, which applies `-ado`/`-ido` endings and handles irregular forms: `abrir → abierto`, `escribir → escrito`, `hacer → hecho`, `poner → puesto`, `romper → roto`, `ver → visto`, `volver → vuelto`, and others. In question mode, `Has`/`Have` is inverted before the subject.
+
+---
+
+## Conditional
+
+**Spanish label:** Condicional
+
+**Formation (English):** `would` + bare infinitive
+
+**Formation (Spanish):** conditional stem + `-ía`/`-íamos` endings
+
+| Subject | English form | Spanish form |
+|---|---|---|
+| I | I would eat | comería |
+| She/He | She would eat | comería |
+| We | We would eat | comeríamos |
+
+**Notes:** The English conditional is uniform across all subjects — `would` never changes. In Spanish, `BuildConditional()` applies the appropriate endings to the Spanish infinitive stem, after checking for irregular stems.
+
+<Note>
+  The `Conditional` tense in Spanish uses special stem changes for certain irregular verbs. These are managed via a `conditionalStems` dictionary inside `BuildSpanishVerb`:
+
+  | Spanish infinitive | Conditional stem |
+  |---|---|
+  | tener | tendr- |
+  | venir | vendr- |
+  | poder | podr- |
+  | poner | pondr- |
+  | salir | saldr- |
+  | hacer | har- |
+  | decir | dir- |
+  | querer | querr- |
+  | saber | sabr- |
+
+  For all other verbs, the conditional is formed by taking the full infinitive as the stem and appending `-ía` (yo/él) or `-íamos` (nosotros), for example `comer` → `comería`, `correr` → `correría`.
+</Note>
+
+In question mode, `Would` is inverted before the subject.
+
+---
+
+## Tense selection in modes
+
+`GenerateSentence` accepts an optional `Tense? forcedTense` parameter:
+
+```csharp
+static (string english, string spanish) GenerateSentence(
+    bool includePlace  = true,
+    bool includeTime   = true,
+    SentenceMode mode  = SentenceMode.Normal,
+    Tense? forcedTense = null
+)
+```
+
+The tense is selected as follows:
+
+```csharp
+var tense = forcedTense ?? (Tense)rnd.Next(7);
+```
+
+- **`forcedTense = null`** (default): a random integer `0`–`6` is cast to the `Tense` enum, giving each of the 7 tenses an equal 1-in-7 probability of being selected for each sentence.
+- **`forcedTense = Tense.PastSimple`** (or any other value): every sentence produced by that call uses exactly that tense. The tense label printed in output reflects whichever tense was used.
+
+The tense label always appears in brackets at the start of both the English and Spanish output lines, e.g. `[Pasado simple] She ate pizza at home.`

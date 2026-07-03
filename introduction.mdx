@@ -1,0 +1,53 @@
+---
+title: "EnglishMatrix: Learn English from the Console"
+sidebarTitle: "Introduction"
+description: "EnglishMatrix is a single-file C# console app for Spanish-speaking learners to practise English A1–A2 with sentence generation, quizzes, and verb conjugation tables."
+---
+
+EnglishMatrix is an interactive C# console application designed to help Spanish-speaking learners practise English at the A1–A2 level. The entire user interface is in Spanish, so learners can focus on acquiring English without the extra cognitive load of navigating a foreign-language interface. From the moment you run `dotnet run`, a Spanish-language menu with 13 numbered options greets you — no configuration required. Under the hood, a single self-contained source file generates bilingual sentences on demand, quizzes your knowledge, and displays full verb-conjugation tables for every supported tense.
+
+## What's included
+
+<CardGroup cols={2}>
+  <Card title="Sentence Generation" icon="wand-magic-sparkles" href="/modes/sentence-generation">
+    Automatically builds declarative sentences or questions across 7 English tenses, with English and Spanish displayed side by side.
+  </Card>
+  <Card title="Translation Quiz" icon="language" href="/modes/translation-quiz">
+    Shows you an English sentence, accepts your Spanish translation, lets you self-score, and reports a final accuracy percentage.
+  </Card>
+  <Card title="Verb Reference" icon="book-open" href="/modes/verb-reference">
+    Displays a sorted table of all regular or irregular verbs — infinitive, past, participle, gerund, and Spanish equivalent — for quick look-up.
+  </Card>
+  <Card title="Verb Quiz" icon="circle-question" href="/modes/verb-quiz">
+    Drills you on past, participle, and gerund forms of regular or irregular verbs, with per-form feedback and a final score.
+  </Card>
+  <Card title="Tense Table" icon="table" href="/modes/tense-table">
+    Generates the full conjugation of any verb across all 7 supported tenses in both English and Spanish for a chosen subject.
+  </Card>
+  <Card title="Short Stories" icon="book" href="/modes/short-stories">
+    Presents short reading passages written in simple English with Spanish translations to build reading comprehension.
+  </Card>
+  <Card title="Custom Vocabulary" icon="pen-to-square" href="/modes/custom-words">
+    Lets you add your own subjects, verbs, complements, places, or time expressions at runtime to extend the built-in vocabulary.
+  </Card>
+</CardGroup>
+
+## Design philosophy
+
+- **Single-file portability.** The entire application — data, models, and logic — lives in one file (`EnglishMatrix.cs`). There are no project-level dependencies beyond the .NET SDK itself, making it trivial to copy, share, or inspect.
+- **All data embedded as static lists.** Verbs (~90 entries), subjects, complements (~60 entries), places, times, conjugation tables (~80 Spanish conjugations), and short stories are all defined as in-memory `static` collections. No database, no external files, no network calls are ever needed at runtime.
+- **Spanish-language UI to reduce friction.** Every menu label, prompt, and feedback message is in Spanish. A1–A2 learners do not have to decode English instructions before they can start practising — the app meets them in their native language.
+- **Semantic verb-complement matching via the `Accepts` field.** Each verb carries an `Accepts` tag (`food`, `drink`, `thing`, `person`, `abstract`, `none`, or `any`). The sentence engine only pairs verbs with semantically compatible complements, preventing nonsense outputs such as *"I drink a book"* or *"She reads a coffee"*.
+
+## Requirements
+
+| Requirement | Details |
+|---|---|
+| .NET SDK | Any modern version supporting C# 8+ (project targets `net10.0`) |
+| NuGet packages | None |
+| Database | None |
+| Internet connection | Not required at runtime |
+
+<Note>
+  Custom words added through **option 11 (Agregar mis propias palabras)** exist only for the duration of the current session. They are stored in memory and are **not persisted to disk**; closing the application discards them.
+</Note>

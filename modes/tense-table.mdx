@@ -1,0 +1,63 @@
+---
+title: "Full Tense Conjugation Table for Any English Verb"
+sidebarTitle: "Tense Table"
+description: "Menu option 9 displays a complete 7-tense conjugation table for any verb in the dictionary, showing English forms for I, She/He, and We alongside Spanish equivalents."
+---
+
+`ModeTenseTable` (option **9**) takes any English verb and prints two grids: one in English and one in Spanish. Each grid covers all **7 tenses** across three grammatical persons — **I**, **She/He**, and **We** — giving you a complete conjugation reference for that verb in a single view.
+
+## Using the tense table
+
+<Steps>
+  <Step title="Select option 9 from the main menu">
+    Enter `9` at the `Elige una opción:` prompt.
+  </Step>
+  <Step title="Type the verb in its base (infinitive) form">
+    Enter the English verb without any inflection — for example `eat`, `run`, or `work`. The lookup is case-insensitive.
+  </Step>
+  <Step title="The full conjugation table is displayed">
+    EnglishMatrix prints the English conjugation grid followed immediately by the Spanish conjugation grid for the same verb.
+  </Step>
+</Steps>
+
+## Sample output
+
+For the verb `eat`:
+
+```text
+Verbo: eat — comer
+
+  Tiempo                 I                            She/He                       We
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  Presente simple        I eat                        She eats                     We eat
+  Presente continuo      I am eating                  She is eating                We are eating
+  Pasado simple          I ate                        She ate                      We ate
+  Pasado continuo        I was eating                 She was eating               We were eating
+  Futuro simple          I will eat                   She will eat                 We will eat
+  Presente perfecto      I have eaten                 She has eaten                We have eaten
+  Condicional            I would eat                  She would eat                We would eat
+
+  Tiempo                 Yo                           Él/Ella                      Nosotros
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  Presente simple        Yo como                      Ella come                    Nos. comemos
+  Presente continuo      Yo estoy comiendo            Ella está comiendo           Nos. estamos comiendo
+  Pasado simple          Yo comí                      Ella comió                   Nos. comimos
+  Pasado continuo        Yo estaba comiendo           Ella estaba comiendo         Nos. estábamos comiendo
+  Futuro simple          Yo comeré                    Ella comerá                  Nos. comeremos
+  Presente perfecto      Yo he comido                 Ella ha comido               Nos. hemos comido
+  Condicional            Yo comería                   Ella comería                 Nos. comeríamos
+```
+
+## Verb availability
+
+The tense table relies on the `conjugaciones` dictionary, which contains pre-built Spanish conjugation data for approximately **134 verbs** as of v9. If you enter a verb that is not in the dictionary, EnglishMatrix displays:
+
+```text
+No tengo el verbo 'xyz' en el diccionario.
+```
+
+and returns to the main menu. You can add a new verb — including its full Spanish conjugation data — using option 11 (see [Custom Words](/modes/custom-words)), after which it will be available in the tense table for the current session.
+
+<Tip>
+  The tense table is the best tool to use before a translation quiz session. Pick the tense you want to practise, study the table to internalise the patterns, and then switch to option 1 or option 3 to generate and translate sentences in that exact tense.
+</Tip>

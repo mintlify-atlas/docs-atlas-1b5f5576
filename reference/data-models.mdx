@@ -1,0 +1,216 @@
+---
+title: "EnglishMatrix Data Models: Word, Complement, VerbEntry, SpanishConj"
+sidebarTitle: "Data Models"
+description: "Complete reference for the four C# data models used by EnglishMatrix: Word, Complement, VerbEntry, and SpanishConj, with all properties, types, and valid values."
+---
+
+EnglishMatrix uses four internal C# classes to represent its vocabulary and conjugation data. All instances are created at startup as static lists embedded directly in the source file — no database or external files are required.
+
+---
+
+## `Word`
+
+`Word` is the general-purpose model used for subjects, verbs (in `verbsForSentences`), place expressions, and time expressions. The `Accepts` property is only meaningful for verbs.
+
+```csharp
+class Word
+{
+    public string English  { get; set; }
+    public string Spanish  { get; set; }
+    public string Category { get; set; }
+    public string Accepts  { get; set; } = "any";
+}
+```
+
+<ParamField body="English" type="string" required>
+  The English word or phrase. For subjects this is the subject pronoun or noun phrase (e.g., `"I"`, `"The teacher"`). For verbs it is the bare infinitive (e.g., `"eat"`). For places and times it is the full expression (e.g., `"at home"`, `"every day"`).
+</ParamField>
+
+<ParamField body="Spanish" type="string" required>
+  The Spanish translation of `English`. For place expressions this includes the preposition (e.g., `"en casa"`). For subject pronouns it is the standard translation (e.g., `"Yo"`, `"Ella"`).
+</ParamField>
+
+<ParamField body="Category" type="string" required>
+  The grammatical role of this word in the sentence engine. Valid values:
+
+  | Value | List | Example |
+  |---|---|---|
+  | `subject` | `subjects` | `"I"`, `"The teacher"` |
+  | `verb` | `verbsForSentences` | `"eat"`, `"run"` |
+  | `place` | `places` | `"at home"` |
+  | `time` | `times` | `"every day"` |
+</ParamField>
+
+<ParamField body="Accepts" type="string" default="any">
+  **Verbs only.** The semantic type of complement this verb is compatible with. Used by `GenerateSentence` to filter the `complements` list and prevent nonsense pairings like "I drink a book". Default value is `"any"`.
+
+  | Value | Meaning |
+  |---|---|
+  | `food` | Accepts food items (e.g., eat, cook, order) |
+  | `drink` | Accepts beverages (e.g., drink) |
+  | `thing` | Accepts physical objects (e.g., buy, find, open) |
+  | `person` | Accepts human complements (e.g., help, love, call) |
+  | `abstract` | Accepts abstract concepts (e.g., need, want, feel, study) |
+  | `none` | No complement — intransitive verb (e.g., run, sleep, jump) |
+  | `any` | Accepts any complement type (default for non-verb words) |
+  | `place` | Accepts a place expression as complement (used by `live`) |
+</ParamField>
+
+---
+
+## `Complement`
+
+`Complement` represents the direct object of a generated sentence. All 96 complement entries are stored in the static `complements` list.
+
+```csharp
+class Complement
+{
+    public string English { get; set; }
+    public string Spanish { get; set; }
+    public string Type    { get; set; }
+}
+```
+
+<ParamField body="English" type="string" required>
+  The complement phrase in English. May include an article (e.g., `"the book"`, `"a sandwich"`) or stand alone (e.g., `"money"`, `"pizza"`).
+</ParamField>
+
+<ParamField body="Spanish" type="string" required>
+  The Spanish translation of the complement. Person complements include the personal-a (e.g., `"a mi amigo"`, `"al enemigo"`).
+</ParamField>
+
+<ParamField body="Type" type="string" required>
+  Semantic category used to match this complement against `Word.Accepts`. Valid values:
+
+  | Value | Description | Example complements |
+  |---|---|---|
+  | `food` | Edible items and meals | `"tacos"`, `"pizza"`, `"a sandwich"` |
+  | `drink` | Beverages | `"water"`, `"coffee"`, `"tea"` |
+  | `thing` | Physical objects and items | `"the book"`, `"the car"`, `"the phone"` |
+  | `person` | People and relationships | `"my friend"`, `"the doctor"`, `"the enemy"` |
+  | `abstract` | Concepts, emotions, skills | `"money"`, `"English"`, `"courage"` |
+</ParamField>
+
+---
+
+## `VerbEntry`
+
+`VerbEntry` stores all five morphological forms of a verb plus its Spanish infinitive and regularity flag. All 153 entries live in the static `verbList`. This list is used by the verb reference table, verb quiz, tense table mode, and by `BuildEnglishVerb` when looking up irregular forms.
+
+```csharp
+class VerbEntry
+{
+    public string Infinitive  { get; set; }
+    public string Past        { get; set; }
+    public string Participle  { get; set; }
+    public string Gerund      { get; set; }
+    public string SpanishInf  { get; set; }
+    public bool   IsRegular   { get; set; }
+}
+```
+
+<ParamField body="Infinitive" type="string" required>
+  The base (infinitive) form of the English verb, e.g. `"eat"`, `"run"`, `"be"`. Used as the lookup key throughout the engine.
+</ParamField>
+
+<ParamField body="Past" type="string" required>
+  The simple past form, e.g. `"ate"`, `"ran"`, `"was/were"`. Read by `GetPast()` and used by `BuildEnglishVerb` for `Tense.PastSimple`.
+</ParamField>
+
+<ParamField body="Participle" type="string" required>
+  The past participle form, e.g. `"eaten"`, `"run"`, `"been"`. Read by `GetParticiple()` and used by `BuildEnglishVerb` for `Tense.PresentPerfect`.
+</ParamField>
+
+<ParamField body="Gerund" type="string" required>
+  The present participle / gerund form, e.g. `"eating"`, `"running"`, `"being"`. Read by `GetGerund()` and used by `BuildEnglishVerb` for `Tense.PresentContinuous` and `Tense.PastContinuous`.
+</ParamField>
+
+<ParamField body="SpanishInf" type="string" required>
+  The Spanish infinitive translation, e.g. `"comer"`, `"correr"`, `"ser/estar"`. Used by `BuildSpanishVerb` as the base for constructing Spanish future simple (`ir a + infinitivo`), continuous forms (gerundio), and conditional stems.
+</ParamField>
+
+<ParamField body="IsRegular" type="bool" required>
+  `true` if the verb forms its past and past participle with the regular `-ed` rule. `false` if the verb is irregular (past/participle must be looked up, not generated). The verb quiz and list modes use this flag to separate the two groups.
+
+  - **Regular example:** `accept` → past: `accepted`, participle: `accepted`
+  - **Irregular example:** `eat` → past: `ate`, participle: `eaten`
+</ParamField>
+
+---
+
+## `SpanishConj`
+
+`SpanishConj` stores Spanish conjugations for the three grammatical persons used by the sentence engine: first-person singular (yo), third-person singular (él/ella), and first-person plural (nosotros). There are 190 entries in the `conjugaciones` dictionary, keyed by English infinitive.
+
+```csharp
+class SpanishConj
+{
+    public string YoPres  { get; set; }
+    public string ElPres  { get; set; }
+    public string NosPres { get; set; }
+    public string YoPast  { get; set; }
+    public string ElPast  { get; set; }
+    public string NosPast { get; set; }
+}
+```
+
+<ParamField body="YoPres" type="string" required>
+  First-person singular **present** tense (yo). Used when the English subject is `"I"`. Example: `"como"` (eat), `"corro"` (run).
+</ParamField>
+
+<ParamField body="ElPres" type="string" required>
+  Third-person singular **present** tense (él/ella). Used for subjects other than `"I"`, `"we"`, `"they"`, or `"you"`. Example: `"come"` (eat), `"corre"` (run).
+</ParamField>
+
+<ParamField body="NosPres" type="string" required>
+  First-person plural **present** tense (nosotros). Used when the English subject is `"we"`, `"they"`, or `"you"`. Example: `"comemos"` (eat), `"corremos"` (run).
+</ParamField>
+
+<ParamField body="YoPast" type="string" required>
+  First-person singular **simple past** (yo pretérito). Example: `"comí"` (ate), `"corrí"` (ran).
+</ParamField>
+
+<ParamField body="ElPast" type="string" required>
+  Third-person singular **simple past** (él/ella pretérito). Example: `"comió"`, `"corrió"`.
+</ParamField>
+
+<ParamField body="NosPast" type="string" required>
+  First-person plural **simple past** (nosotros pretérito). Example: `"comimos"`, `"corrimos"`.
+</ParamField>
+
+<Note>
+  Several reflexive verbs include the reflexive pronoun directly in the stored form. For example, `hide` is stored as `YoPres = "me escondo"`, `ElPres = "se esconde"`, `NosPres = "nos escondemos"`. Similarly, `dress` → `"me visto"` / `"se viste"` / `"nos vestimos"`, and `worry` → `"me preocupo"` / `"se preocupa"` / `"nos preocupamos"`. These forms are used verbatim by `BuildSpanishVerb` and appear correctly in generated sentences.
+</Note>
+
+---
+
+## Complement compatibility
+
+`GenerateSentence` matches `Word.Accepts` (on the verb) against `Complement.Type` (on the complement) before assembling a sentence. This prevents semantically nonsensical pairings.
+
+The matching rule in source:
+
+```csharp
+var compatible = complements.Where(c =>
+    verb.Accepts == "any"
+    || c.Type == verb.Accepts
+    || (verb.Accepts == "abstract" &&
+        (c.Type == "abstract" || c.Type == "thing" || c.Type == "person"))
+).ToList();
+```
+
+The resulting compatibility matrix is:
+
+| `Word.Accepts` | `food` | `drink` | `thing` | `person` | `abstract` |
+|---|---|---|---|---|---|
+| `food` | ✅ | ❌ | ❌ | ❌ | ❌ |
+| `drink` | ❌ | ✅ | ❌ | ❌ | ❌ |
+| `thing` | ❌ | ❌ | ✅ | ❌ | ❌ |
+| `person` | ❌ | ❌ | ❌ | ✅ | ❌ |
+| `abstract` | ❌ | ❌ | ✅ | ✅ | ✅ |
+| `any` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `none` | — | — | — | — | — |
+
+Verbs with `Accepts = "none"` (e.g., `run`, `sleep`, `jump`) skip the complement selection step entirely and produce sentences with no direct object.
+
+The `abstract` type deliberately broadens to include `thing` and `person` complements. This means a verb like `need` can generate `"I need the book"` (thing) or `"I need the doctor"` (person), not just purely abstract nouns.

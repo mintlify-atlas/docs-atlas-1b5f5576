@@ -1,0 +1,188 @@
+---
+title: "EnglishMatrix Built-in Vocabulary Inventory"
+sidebarTitle: "Vocabulary"
+description: "Complete inventory of EnglishMatrix's built-in vocabulary: 153 verbs, 134 Spanish conjugations, 96 complements, 22 subjects, 31 places, and 36 time expressions."
+---
+
+EnglishMatrix ships with a rich built-in vocabulary embedded as static C# lists. All data is compiled directly into the single `.cs` source file and loaded into memory at startup — no database or external files are involved. This page documents what is included and how each category is used at runtime.
+
+---
+
+## Summary
+
+| Category | Count | Used in |
+|---|---|---|
+| `verbList` (total) | **153** | Verb reference table, verb quiz, tense table |
+| — Regular verbs (`IsRegular=true`) | 95 | Verb list mode, verb quiz |
+| — Irregular verbs (`IsRegular=false`) | 58 | Verb list mode, verb quiz |
+| `conjugaciones` (Spanish dictionary) | **134** | Tense table, Spanish sentence output |
+| `verbsForSentences` | **64** | Sentence generation only |
+| `subjects` | **22** | Sentence generation |
+| `complements` | **96** | Sentence generation |
+| `places` | **31** | Sentence generation (optional) |
+| `times` | **36** | Sentence generation (optional) |
+| Short stories (`stories`) | **44** | Short stories mode (A1/A2/C1 levels) |
+
+---
+
+## Subjects
+
+The `subjects` list contains 22 entries. All are used by `GenerateSentence` as sentence subjects. Third-person singular subjects (used for `-s`/`-es` conjugation and `is`/`was`/`has`) are: `she`, `he`, `my mom`, `snake`, `mario`, `link`, `my friend`, `the soldier`, `the player`, and any `"the X"` form not in the plural/first/second group.
+
+| English | Spanish |
+|---|---|
+| I | Yo |
+| You | Tú |
+| She | Ella |
+| He | Él |
+| We | Nosotros |
+| They | Ellos/Ellas |
+| My mom | Mi mamá |
+| My dad | Mi papá |
+| My friend | Mi amigo |
+| My sister | Mi hermana |
+| My brother | Mi hermano |
+| The teacher | El maestro/La maestra |
+| The student | El estudiante |
+| The cat | El gato |
+| The dog | El perro |
+| The bird | El pájaro |
+| The fish | El pez |
+| Snake | La serpiente |
+| Mario | Mario |
+| Link | Link |
+| The soldier | El soldado |
+| The player | El jugador |
+
+---
+
+## Complement types
+
+The `complements` list contains 96 entries across five semantic types. The `Type` field of each complement is matched against `Word.Accepts` on the verb before any complement is selected. See [Complement compatibility](/reference/data-models#complement-compatibility) for the full matching matrix.
+
+### `food` — 21 complements
+Paired with verbs like `eat`, `cook`, `order`.
+
+Examples: `tacos`, `pizza`, `soup`, `a sandwich`, `rice`, `chicken`, `fish`, `eggs`, `bread`, `cheese`, `an apple`, `a banana`, `milk`, `pasta`, `a hamburger`, `ice cream`, `salad`, `fruit`, `vegetables`, `cake`, `food`
+
+### `drink` — 7 complements
+Paired with verbs like `drink`.
+
+Examples: `water`, `coffee`, `juice`, `tea`, `cola`, `beer`, `wine`
+
+### `thing` — 38 complements
+Paired with verbs like `buy`, `find`, `open`, `use`, `save`, `read`, `write`, `watch`, `carry`, `play`, `build`, `break`, `fix`, `send`, `sell`, `choose`, `show`, `clean`, `drive`, `listen`, `upgrade`, `unlock`, `hack`, `install`, `brush`, `comb`, `like`, `paint`, `shop`, `wash`.
+
+Examples: `the weapon`, `the key`, `the bag`, `the sword`, `the shield`, `the map`, `the car`, `the phone`, `the book`, `the game`, `the mission`, `the door`, `the computer`, `the music`, `the house`, `the letter`, `the pen`, `the pencil`, `the paper`, `the notebook`, `the desk`, `the chair`, `the table`, `the bed`, `the bicycle`, `the camera`, `the watch`, `the shoes`, `the shirt`, `the pants`, `clothes`, `a shirt`, `a gift`, `a ticket`, `a movie`
+
+### `person` — 15 complements
+Paired with verbs like `help`, `love`, `fear`, `miss`, `fight`, `attack`, `defend`, `call`, `tell`, `ask`, `meet`, `protect`, `teach`, `invite`, `talk`.
+
+Examples: `my friend`, `the enemy`, `my mom`, `my dad`, `my sister`, `my brother`, `my cousin`, `the boss`, `the soldier`, `the student`, `the doctor`, `the teacher`, `the nurse`, `the driver`, `the child`
+
+### `abstract` — 15 complements
+Paired with verbs like `need`, `want`, `study`, `feel`, `plan`. Note: the `abstract` type also accepts `thing` and `person` complements via the broadened matching rule.
+
+Examples: `money`, `time`, `help`, `energy`, `English`, `math`, `courage`, `patience`, `happiness`, `love`, `freedom`, `knowledge`, `homework`, `a test`, `music`, `a story`, `the weather`, `a song`
+
+---
+
+## Place expressions
+
+The `places` list contains 31 entries. When `includePlace = true`, `GenerateSentence` includes a place expression with 50% probability (a `rnd.Next(2) == 0` coin flip). Place expressions are appended after the verb and complement.
+
+| English | Spanish |
+|---|---|
+| at home | en casa |
+| at the store | en la tienda |
+| in the office | en la oficina |
+| in the base | en la base |
+| at school | en la escuela |
+| in the forest | en el bosque |
+| in the city | en la ciudad |
+| by the river | junto al río |
+| on the mountain | en la montaña |
+| at the gym | en el gimnasio |
+| in the castle | en el castillo |
+| in the desert | en el desierto |
+| at the park | en el parque |
+| in the lab | en el laboratorio |
+| at the hospital | en el hospital |
+| in the cave | en la cueva |
+| on the rooftop | en la azotea |
+| underground | bajo tierra |
+| at the restaurant | en el restaurante |
+| in the kitchen | en la cocina |
+| in the bedroom | en la recámara |
+| in the bathroom | en el baño |
+| in the living room | en la sala |
+| at the beach | en la playa |
+| at the library | en la biblioteca |
+| in the market | en el mercado |
+| in the church | en la iglesia |
+| at the bus stop | en la parada de autobús |
+| at the train station | en la estación de tren |
+| in the car | en el carro |
+| on the bus | en el autobús |
+
+---
+
+## Time expressions
+
+The `times` list contains 36 entries. When `includeTime = true`, `GenerateSentence` includes a time expression with 50% probability. Time expressions are appended after any place expression.
+
+| English | Spanish |
+|---|---|
+| every day | todos los días |
+| at night | por las noches |
+| on Sundays | los domingos |
+| on Monday | el lunes |
+| on Tuesday | el martes |
+| on Wednesday | el miércoles |
+| on Thursday | el jueves |
+| on Friday | el viernes |
+| on Saturday | el sábado |
+| every morning | cada mañana |
+| right now | ahorita |
+| every week | cada semana |
+| in the afternoon | por la tarde |
+| in the evening | por la noche |
+| before work | antes del trabajo |
+| after school | después de la escuela |
+| on weekends | los fines de semana |
+| last night | anoche |
+| yesterday | ayer |
+| last week | la semana pasada |
+| last month | el mes pasado |
+| last year | el año pasado |
+| tomorrow | mañana |
+| next week | la próxima semana |
+| next month | el próximo mes |
+| in the morning | por la mañana |
+| in the past | en el pasado |
+| in the future | en el futuro |
+| for hours | por horas |
+| at 8 o'clock | a las 8 en punto |
+| at noon | al mediodía |
+| at midnight | a la medianoche |
+| in the summer | en el verano |
+| in the winter | en el invierno |
+| in the spring | en la primavera |
+| in the fall | en el otoño |
+
+---
+
+## Verb coverage gap
+
+According to the `VERB_ANALYSIS_REPORT.md` included with the project, **35 verbs** present in `verbList` do not yet have a corresponding entry in the `conjugaciones` dictionary. This means they will not produce a Spanish conjugation in the tense table mode and will fall back to algorithmically generated (approximate) Spanish forms in sentence generation.
+
+The 35 affected verbs (as of the report date 2026-06-05):
+
+| Type | Verbs |
+|---|---|
+| Regular (18) | `activate`, `add`, `climb`, `close`, `collect`, `complete`, `download`, `install`, `load`, `print`, `test`, `turn`, `type`, `unlock`, `upgrade`, `upload`, `use`, `visit` |
+| Irregular (17) | `be`, `beat`, `become`, `begin`, `blow`, `bring`, `come`, `cost`, `cut`, `do`, `get`, `go`, `have`, `hold`, `hurt`, `keep`, `make`, `mean`, `put`, `ride`, `ring`, `rise`, `say`, `seek`, `set`, `shake`, `shoot`, `shrink`, `shut`, `sink`, `stand`, `steal`, `strike`, `swing`, `wear` |
+
+When `BuildSpanishVerb` cannot find a verb in `conjugaciones`, it falls back to a generic programmatic conjugation derived from the Spanish infinitive's ending. See [How the Sentence Engine Handles Missing Conjugations](/reference/sentence-engine#buildspanishverb) for details on the fallback logic.
+
+Additionally, 3 verbs (`laugh`, `cry`, `worry`) have entries in `conjugaciones` but were missing from `verbList` at the time the report was generated. These verbs do appear in `verbsForSentences` and are used in sentence generation.

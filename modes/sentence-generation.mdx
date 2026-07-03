@@ -1,0 +1,82 @@
+---
+title: "Generating English Sentences and Questions Across 7 Tenses"
+sidebarTitle: "Sentence Generation"
+description: "Use EnglishMatrix menu options 1 and 2 to generate up to 20 declarative sentences or questions per session, choosing from 7 English verb tenses or random mix."
+---
+
+`ModeGenerate` is the core production engine of EnglishMatrix. Options **1** (sentences) and **2** (questions) both feed into the same `GenerateSentence` engine under the hood — the only difference between them is whether the call passes `SentenceMode.Normal` or `SentenceMode.Question`. Every sentence is printed as an English–Spanish pair labelled with the active tense.
+
+## Starting a session
+
+After selecting option 1 or 2, EnglishMatrix first asks which verb tense to practice:
+
+```text
+Tiempo verbal:
+  0. Aleatorio (mezcla todos)
+  1. Presente simple       (I eat)
+  2. Presente continuo     (I am eating)
+  3. Pasado simple         (I ate)
+  4. Pasado continuo       (I was eating)
+  5. Futuro simple         (I will eat)
+  6. Presente perfecto     (I have eaten)
+  7. Condicional           (I would eat)
+Elige (0-7):
+```
+
+Then it asks how many sentences to produce in this batch:
+
+```text
+¿Cuántas quieres generar? (1-20):
+```
+
+Enter any number from 1 to 20. If you enter an invalid value the session defaults to 5 sentences.
+
+## Sample output
+
+**Option 1 — Normal mode (declarative sentences):**
+
+```text
+1. EN: [Presente simple] She eats tacos at home today.
+   ES: [Presente simple] Ella come tacos en casa hoy.
+
+2. EN: [Pasado continuo] We were drinking coffee at the café yesterday.
+   ES: [Pasado continuo] Nosotros estábamos bebiendo café en el café ayer.
+```
+
+**Option 2 — Question mode:**
+
+```text
+1. EN: [Presente simple] Does she eat tacos at home today?
+   ES: [Presente simple] ¿Ella come tacos en casa hoy?
+```
+
+## Declarative vs. question mode
+
+In **Normal mode** (`SentenceMode.Normal`) the generator builds sentences in standard English word order:
+
+> `Subject + Verb (conjugated) + Complement + [Place] + [Time]`
+
+In **Question mode** (`SentenceMode.Question`) the generator applies auxiliary inversion before printing. The appropriate auxiliary is selected per tense and per grammatical person:
+
+> `Auxiliary + Subject + Verb + Complement + [Place] + [Time] ?`
+
+The auxiliaries used are: `Do / Does` (Present Simple), `Am / Is / Are` (Present Continuous), `Did` (Past Simple), `Was / Were` (Past Continuous), `Will` (Future Simple), `Has / Have` (Present Perfect), `Would` (Conditional).
+
+For compound tenses (Present Continuous, Past Continuous, Present Perfect) the auxiliary is extracted from the already-formed English verb string, and the remaining participle or gerund is reused, so the question is always grammatically correct.
+
+## Tense selection
+
+| Option | Tense | English example | Spanish label |
+|--------|-------|----------------|---------------|
+| 0 | Aleatorio | *(random mix)* | Aleatorio |
+| 1 | Present Simple | I eat | Presente simple |
+| 2 | Present Continuous | I am eating | Presente continuo |
+| 3 | Past Simple | I ate | Pasado simple |
+| 4 | Past Continuous | I was eating | Pasado continuo |
+| 5 | Future Simple | I will eat | Futuro simple |
+| 6 | Present Perfect | I have eaten | Presente perfecto |
+| 7 | Conditional | I would eat | Condicional |
+
+<Note>
+  The generator randomly picks a subject, a verb, and a semantically compatible complement based on the verb's `Accepts` field (e.g., a verb that `Accepts = "food"` will never be paired with a person complement). Place and time phrases are added at random 50 % probability each, so sentences are always grammatically plausible even though vocabulary is drawn at random.
+</Note>

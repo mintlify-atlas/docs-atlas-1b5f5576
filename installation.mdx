@@ -1,0 +1,111 @@
+---
+title: "Installing EnglishMatrix on Windows, macOS, and Linux"
+sidebarTitle: "Installation"
+description: "Step-by-step guide to installing the .NET SDK and setting up EnglishMatrix on Windows, macOS, or Linux in under two minutes."
+---
+
+EnglishMatrix requires only the .NET SDK — there are no NuGet packages to restore, no database to provision, and no environment variables to configure. Once the SDK is available on your machine, a single `dotnet run` command is all it takes to launch the application.
+
+<Steps>
+  <Step title="Install the .NET SDK">
+    EnglishMatrix targets **`net10.0`** (defined in `EnglishMatrix.csproj`). Install .NET 10 for your platform:
+
+    <Tabs>
+      <Tab title="Windows">
+        **Option A — winget (recommended):**
+        ```powershell
+        winget install Microsoft.DotNet.SDK.10
+        ```
+
+        **Option B — Installer:**
+        Download and run the official installer from [https://dotnet.microsoft.com/download](https://dotnet.microsoft.com/download).
+
+        Verify the installation:
+        ```powershell
+        dotnet --version
+        ```
+      </Tab>
+      <Tab title="macOS">
+        **Option A — Homebrew:**
+        ```bash
+        brew install --cask dotnet-sdk
+        ```
+
+        **Option B — Installer:**
+        Download the macOS `.pkg` installer from [https://dotnet.microsoft.com/download](https://dotnet.microsoft.com/download) and follow the prompts.
+
+        Verify the installation:
+        ```bash
+        dotnet --version
+        ```
+      </Tab>
+      <Tab title="Linux">
+        **Ubuntu / Debian (apt):**
+        ```bash
+        sudo apt-get update
+        sudo apt-get install -y dotnet-sdk-10.0
+        ```
+
+        **Fedora / RHEL (dnf):**
+        ```bash
+        sudo dnf install dotnet-sdk-10.0
+        ```
+
+        For other distributions, follow the [official Linux install guide](https://learn.microsoft.com/dotnet/core/install/linux).
+
+        Verify the installation:
+        ```bash
+        dotnet --version
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+
+  <Step title="Clone or download the source">
+    Clone the repository and change into the project directory:
+
+    ```bash
+    git clone https://github.com/kyomega85/EnglishMatrix.git
+    cd EnglishMatrix
+    ```
+
+    Alternatively, download and extract the ZIP archive from the GitHub repository page.
+  </Step>
+
+  <Step title="Verify the project file">
+    The repository includes `EnglishMatrix.csproj`, which configures the build. Its full contents are:
+
+    ```csharp
+    <Project Sdk="Microsoft.NET.Sdk">
+
+      <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+      </PropertyGroup>
+
+    </Project>
+    ```
+
+    No `<PackageReference>` entries are present — the project has zero external dependencies.
+  </Step>
+
+  <Step title="Run the app">
+    From the `EnglishMatrix` directory, start the application with:
+
+    ```bash
+    dotnet run
+    ```
+
+    The .NET SDK compiles the project on first run (subsequent starts are faster) and the main menu appears immediately in your terminal.
+  </Step>
+</Steps>
+
+<Tip>
+  If you have an earlier .NET SDK installed (versions 6–9), change the `<TargetFramework>` value in `EnglishMatrix.csproj` to match your installed version — for example, `net8.0` or `net9.0`. The source code is fully compatible with C# 8+, so all features will work without any other changes.
+</Tip>
+
+<Warning>
+  The application's entry point is `EnglishMatrix.cs`. If you created your project with `dotnet new console`, the SDK generates a `Program.cs` file by default. You must either **replace** `Program.cs` with `EnglishMatrix.cs` or **rename** `EnglishMatrix.cs` to `Program.cs` before running `dotnet run`, otherwise the build will fail due to duplicate entry points.
+</Warning>

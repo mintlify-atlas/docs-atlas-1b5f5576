@@ -1,47 +1,177 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Get Started with EnglishMatrix in Minutes"
+sidebarTitle: "Quickstart"
+description: "Launch EnglishMatrix, navigate the main menu, and complete your first sentence-generation and quiz session with this step-by-step quickstart guide."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
+After completing the [installation](/installation), running `dotnet run` from the project directory launches EnglishMatrix immediately and displays the main menu in your terminal. No login, no setup wizard, no configuration file — just start practising. This quickstart walks through three of the most common practice flows: generating bilingual sentences, taking a translation quiz, and drilling verb forms.
 
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
+## Main menu
 
-## Prerequisites
+Every session begins here. Type the number of the mode you want and press **Enter**:
 
-Before you begin, you must have:
+```text
+╔══════════════════════════════════════════╗
+║    🎓 English Matrix v9 — Menú           ║
+╠══════════════════════════════════════════╣
+║   ORACIONES                              ║
+║  1. Generar oraciones                    ║
+║  2. Generar preguntas                    ║
+║  3. Quiz — adivina la traducción         ║
+║  4. Quiz — modo pregunta                 ║
+╠══════════════════════════════════════════╣
+║   VERBOS                                 ║
+║  5. Lista de verbos regulares            ║
+║  6. Lista de verbos irregulares          ║
+║  7. Quiz — verbos regulares              ║
+║  8. Quiz — verbos irregulares            ║
+╠══════════════════════════════════════════╣
+║   TIEMPOS VERBALES                       ║
+║  9. Tabla de tiempos de un verbo         ║
+╠══════════════════════════════════════════╣
+║   LECTURA                                ║
+║  10. Historias cortas en inglés          ║
+╠══════════════════════════════════════════╣
+║  11. Agregar mis propias palabras        ║
+║  12. Ver todas mis palabras              ║
+║  13. Salir                               ║
+╚══════════════════════════════════════════╝
+```
 
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
+---
 
-## Get started
+## Practice flow 1: Generate sentences
+
+Use option 1 to produce a set of ready-made bilingual sentences and study how English structures map to Spanish.
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
+  <Step title="Select sentence generation">
+    At the main menu, type `1` and press **Enter** to choose **Generar oraciones**.
+  </Step>
+  <Step title="Choose a tense">
+    The app lists all seven supported tenses. Enter `0` to pick a random mix, or enter a number from `1` to `7` to lock in a specific tense:
 
-    ```bash
-    npm install your-package
+    ```
+    Tiempo verbal:
+      0. Aleatorio (mezcla todos)
+      1. Presente simple       (I eat)
+      2. Presente continuo     (I am eating)
+      3. Pasado simple         (I ate)
+      4. Pasado continuo       (I was eating)
+      5. Futuro simple         (I will eat)
+      6. Presente perfecto     (I have eaten)
+      7. Condicional           (I would eat)
+    Elige (0-7):
     ```
   </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
+  <Step title="Set the sentence count">
+    When prompted, enter a number between `1` and `20` to control how many sentences are generated. If you enter an out-of-range value, the app defaults to 5.
 
-    ```bash
-    your-cli init
+    ```
+    ¿Cuántas quieres generar? (1-20):
     ```
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+  <Step title="Read the output">
+    Each sentence is printed with its English and Spanish versions on consecutive lines:
 
-    ```bash
-    your-cli start
+    ```
+    1. EN: She eats tacos at home today.
+       ES: Ella come tacos en casa hoy.
+
+    2. EN: We are reading a book in the library now.
+       ES: Nosotros estamos leyendo un libro en la biblioteca ahora.
+    ```
+
+    Press **Enter** when you are done to return to the main menu.
+  </Step>
+</Steps>
+
+---
+
+## Practice flow 2: Translation quiz
+
+Use option 3 to test how well you can translate English sentences into Spanish — at your own pace, with self-scoring.
+
+<Steps>
+  <Step title="Start the quiz">
+    At the main menu, type `3` and press **Enter** to select **Quiz — adivina la traducción**.
+  </Step>
+  <Step title="Read the English sentence">
+    The app displays a randomly generated English sentence:
+
+    ```
+    EN: The hero drinks coffee at the café every morning.
+    Tu traducción:
+    ```
+  </Step>
+  <Step title="Type your Spanish translation">
+    Write your best Spanish translation and press **Enter**. The correct answer is then revealed beneath yours:
+
+    ```
+    Tu traducción: El héroe bebe café en el café cada mañana.
+    Respuesta: El héroe bebe café en el café cada mañana.
+    ```
+  </Step>
+  <Step title="Self-score the attempt">
+    The app asks whether you got it right. Enter `s` (sí) to count it as correct, or `n` (no) to mark it wrong:
+
+    ```
+    ¿La tuviste bien? (s/n):
+    ```
+  </Step>
+  <Step title="End the session and check your score">
+    Type `salir` at the **Tu traducción:** prompt to finish the quiz. The app displays your final score:
+
+    ```
+    Resultado: 7/10 (70%)
+    ¡Bien! Sigue practicando 💪
+    ```
+  </Step>
+</Steps>
+
+---
+
+## Practice flow 3: Verb forms quiz
+
+Use option 7 (regular) or option 8 (irregular) to drill the three principal verb forms — past, participle, and gerund — for each verb in the built-in vocabulary.
+
+<Steps>
+  <Step title="Choose regular or irregular verbs">
+    At the main menu, type `7` for **Quiz — verbos regulares** or `8` for **Quiz — verbos irregulares** and press **Enter**.
+  </Step>
+  <Step title="Read the verb prompt">
+    The app shows the infinitive and its Spanish translation:
+
+    ```
+    Verbo: walk (caminar)
+    ```
+  </Step>
+  <Step title="Enter each verb form">
+    Type your answers one by one, pressing **Enter** after each:
+
+    ```
+    Verbo: walk (caminar)
+      Pasado     (past):        walked
+      Participio (participle):  walked
+      Gerundio   (gerund -ing): walking
+    ```
+
+    If all three forms are correct, the app responds with **✅ ¡Perfecto!**. For any incorrect form it shows the right answer:
+
+    ```
+      ✗ Participio: correcto = written
+    ```
+  </Step>
+  <Step title="End the session and check your score">
+    Type `salir` when prompted for any form to exit the quiz. Your score is calculated per full verb attempt:
+
+    ```
+    Resultado: 5/8 (62%)
+    ¡Bien! Sigue practicando 💪
     ```
   </Step>
 </Steps>
 
 <Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
-
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
+  Before taking the verb forms quiz, use **option 9 (Tabla de tiempos de un verbo)** to look up any verb. It displays a full conjugation table across all 7 tenses — in both English and Spanish — so you can review forms before being tested on them.
 </Tip>

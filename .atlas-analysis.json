@@ -1,0 +1,78 @@
+{
+  "projectType": "cli-tool",
+  "projectName": "EnglishMatrix",
+  "projectDescription": "An interactive C# console application for Spanish speakers to learn English at A1–A2 level, featuring sentence generation, translation quizzes, verb conjugation tables, and short reading passages.",
+  "theme": "almond",
+  "primaryColor": "#4F86C6",
+  "lightColor": "#EBF3FB",
+  "darkColor": "#1E3A5F",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Modes & Features",
+            "pages": [
+              "modes/sentence-generation",
+              "modes/translation-quiz",
+              "modes/verb-reference",
+              "modes/verb-quiz",
+              "modes/tense-table",
+              "modes/short-stories",
+              "modes/custom-words"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "reference/data-models",
+              "reference/verb-tenses",
+              "reference/vocabulary",
+              "reference/sentence-engine"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Automatic sentence and question generation across 7 English verb tenses",
+    "Interactive translation quizzes with self-scored results",
+    "Verb conjugation reference tables for 153 regular and irregular verbs",
+    "Verb form quiz (past, participle, gerund) for both regular and irregular verbs",
+    "Full tense conjugation table for any verb across all 7 tenses",
+    "Short reading stories with bilingual (English/Spanish) support, filterable by CEFR level",
+    "Runtime custom vocabulary: add your own subjects, verbs, complements, places, and times",
+    "Semantic verb-complement matching to avoid nonsense sentences (e.g., never 'I drink a book')",
+    "Entirely Spanish-language UI for A1–A2 Spanish-speaking learners",
+    "Zero external dependencies — single .cs file, runs with dotnet run"
+  ],
+  "publicApiSurface": [
+    "ModeGenerate(SentenceMode mode) — generate N declarative sentences or questions",
+    "ModeQuiz(SentenceMode mode) — interactive translation quiz with score",
+    "ModeVerbList(bool regular) — display regular or irregular verb table",
+    "ModeVerbQuiz(bool regular) — quiz on verb forms (past/participle/gerund)",
+    "ModeTenseTable() — show all 7 tense conjugations for a given verb",
+    "ModeShortStories() — read short English stories, filter by level",
+    "ModeAddWords() — add custom subjects, verbs, complements, places, times at runtime",
+    "ModeListWords() — list all loaded vocabulary including custom additions",
+    "GenerateSentence(bool includePlace, bool includeTime, SentenceMode mode, Tense? forcedTense)",
+    "BuildEnglishVerb(string subject, string verb, Tense tense)",
+    "BuildSpanishVerb(string subject, string verb, Tense tense)",
+    "enum Tense { PresentSimple, PresentContinuous, PastSimple, PastContinuous, FutureSimple, PresentPerfect, Conditional }",
+    "enum SentenceMode { Normal, Question }",
+    "class Word { English, Spanish, Category, Accepts }",
+    "class Complement { English, Spanish, Type }",
+    "class VerbEntry { Infinitive, Past, Participle, Gerund, SpanishInf, IsRegular }",
+    "class SpanishConj { YoPres, ElPres, NosPres, YoPast, ElPast, NosPast }"
+  ]
+}

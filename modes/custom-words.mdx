@@ -1,0 +1,88 @@
+---
+title: "Adding and Viewing Custom Vocabulary at Runtime"
+sidebarTitle: "Custom Words"
+description: "Menu options 11 and 12 let you extend EnglishMatrix vocabulary at runtime — adding subjects, verbs with full conjugations, complements, places, and times without editing source code."
+---
+
+`ModeAddWords` (option **11**) and `ModeListWords` (option **12**) let you personalise the vocabulary without touching the source code. Any word you add is immediately available in all sentence generation, quiz, and tense table modes for the rest of the current session. Changes persist in memory only — closing the application discards all custom words.
+
+## Adding a word (option 11)
+
+<Steps>
+  <Step title="Select option 11 from the main menu">
+    Enter `11` at the `Elige una opción:` prompt.
+  </Step>
+  <Step title="Choose the word category">
+    EnglishMatrix presents five categories:
+    ```
+    1. Sujeto   2. Verbo   3. Complemento   4. Lugar   5. Tiempo
+    ```
+    Enter the number for the category that matches the word you want to add.
+  </Step>
+  <Step title="Enter the English word and its Spanish translation">
+    For any category you will be asked:
+    ```
+    Palabra en inglés:
+    Traducción en español:
+    ```
+  </Step>
+  <Step title="(Verbo only) Enter morphological forms and regularity">
+    If you chose **Verbo**, three additional fields are required:
+    ```
+    Pasado:
+    Participio:
+    Gerundio:
+    ¿Regular? (s/n):
+    ```
+    The verb is added to `verbList` with the `IsRegular` flag you set, making it available in the verb reference tables and verb quizzes.
+  </Step>
+  <Step title="(Verbo only) Enter the six Spanish conjugation forms">
+    EnglishMatrix then asks for the present and past conjugations used to build the Spanish side of generated sentences and the tense table:
+    ```
+    YO presente:
+    ÉL/ELLA presente:
+    NOSOTROS presente:
+    YO pasado:
+    ÉL/ELLA pasado:
+    NOSOTROS pasado:
+    ```
+    These values are stored in the `conjugaciones` dictionary under the verb's infinitive key.
+  </Step>
+  <Step title="(Verbo only) Choose the complement type the verb accepts">
+    Finally, specify which semantic category of complement fits this verb:
+    ```
+    1. Comida   2. Bebida   3. Objeto   4. Persona   5. Abstracto   6. Ninguno
+    ```
+    This `Accepts` value controls which complements the sentence generator can pair with the verb, ensuring grammatically plausible output. The verb is added to `verbsForSentences` with this setting.
+  </Step>
+  <Step title="(Complemento only) Choose the semantic type">
+    If you chose **Complemento**, select one of:
+    ```
+    1. Comida   2. Bebida   3. Objeto   4. Persona   5. Abstracto
+    ```
+    The `Type` field determines which verbs can select this complement.
+  </Step>
+</Steps>
+
+## Viewing all words (option 12)
+
+Option 12 lists every word currently loaded in memory, including any custom additions you made this session, grouped by category:
+
+- **Sujetos** — all subjects with English and Spanish values
+- **Verbos para oraciones** — verbs used in sentence generation, each showing its `Accepts` type
+- **Verbos en lista** — total count with a regular/irregular breakdown
+- **Complementos** — all complements with English, Spanish, and semantic type
+- **Lugares** — all place adverbials
+- **Tiempos** — all time adverbials
+
+## Session lifetime
+
+Custom words are held **in memory only**. EnglishMatrix does not write any data to disk. When you exit the application (option 13), all additions are permanently discarded. If you regularly use the same custom vocabulary, consider editing the source file `EnglishMatrix.cs` to add it to the static lists so it is always present on startup.
+
+<Warning>
+  Custom verbs added via option 11 are simultaneously inserted into three in-memory collections: `verbList` (for verb reference tables and verb quizzes), `verbsForSentences` (for sentence and question generation), and `conjugaciones` (for the tense table). A verb must be added only once — adding the same verb a second time will create a duplicate entry in all three collections, which can cause it to appear twice in quiz pools.
+</Warning>
+
+<Tip>
+  Use option 12 immediately after adding a word to verify that the English form, Spanish translation, and `Accepts` / `Type` values all look correct before running a quiz session with the new vocabulary.
+</Tip>

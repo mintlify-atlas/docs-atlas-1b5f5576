@@ -1,0 +1,333 @@
+---
+title: "How the EnglishMatrix Sentence Engine Works"
+sidebarTitle: "Sentence Engine"
+description: "Technical reference for GenerateSentence, BuildEnglishVerb, and BuildSpanishVerb — the three functions that produce bilingual English/Spanish sentence pairs in EnglishMatrix."
+---
+
+The sentence engine consists of three static methods: `GenerateSentence`, `BuildEnglishVerb`, and `BuildSpanishVerb`. Together they take a randomly selected subject, verb, and compatible complement and produce a complete bilingual sentence pair with tense label. The engine is used by all sentence generation modes, both quiz modes, and the tense table mode.
+
+<Note>
+  The sentence engine is purely functional — it reads from the static vocabulary lists (`subjects`, `verbsForSentences`, `complements`, `verbList`, `conjugaciones`, `places`, `times`) and returns strings. It has no side effects and does not mutate any state. The same inputs will always produce the same output.
+</Note>
+
+---
+
+## `SentenceMode` enum
+
+```csharp
+enum SentenceMode { Normal, Question }
+```
+
+<ParamField body="Normal" type="SentenceMode">
+  Produces a **declarative sentence** in the form `Subject + verb phrase + complement + place + time.`
+
+  Example: `She eats tacos at home every day.` / `Ella come tacos en casa todos los días.`
+</ParamField>
+
+<ParamField body="Question" type="SentenceMode">
+  Produces an **interrogative sentence** by placing the appropriate English auxiliary verb before the subject and appending `?`. The Spanish output mirrors the question form using the same conjugated verb preceded by `¿`.
+
+  Example: `Does she eat tacos at home every day?` / `¿Ella come tacos en casa todos los días?`
+</ParamField>
+
+---
+
+## `GenerateSentence`
+
+```csharp
+static (string english, string spanish) GenerateSentence(
+    bool includePlace  = true,
+    bool includeTime   = true,
+    SentenceMode mode  = SentenceMode.Normal,
+    Tense? forcedTense = null
+)
+```
+
+`GenerateSentence` is the main entry point for all output modes. It orchestrates subject, verb, complement, place, and time selection and delegates verb conjugation to `BuildEnglishVerb` and `BuildSpanishVerb`.
+
+<ParamField body="includePlace" type="bool" default="true">
+  When `true`, a place expression from the `places` list is appended to the sentence with 50% probability (a `rnd.Next(2) == 0` coin flip). Set to `false` to always omit place expressions.
+</ParamField>
+
+<ParamField body="includeTime" type="bool" default="true">
+  When `true`, a time expression from the `times` list is appended with 50% probability. Set to `false` to always omit time expressions.
+</ParamField>
+
+<ParamField body="mode" type="SentenceMode" default="Normal">
+  Controls the sentence structure. `Normal` produces a declarative sentence; `Question` produces an interrogative sentence with auxiliary inversion.
+</ParamField>
+
+<ParamField body="forcedTense" type="Tense?" default="null">
+  When `null`, the tense is selected randomly: `(Tense)rnd.Next(7)`, giving each of the 7 tenses equal probability. When set to a specific `Tense` value, every sentence produced by this call uses that tense.
+</ParamField>
+
+**Return value:** A `(string english, string spanish)` tuple. Each string is prefixed with the Spanish tense label in brackets, e.g. `[Presente simple] She eats tacos at home.` and `[Presente simple] Ella come tacos en casa.`
+
+### Selection logic (step by step)
+
+1. **Subject:** A random entry is picked from `subjects` (22 entries).
+2. **Verb:** A random entry is picked from `verbsForSentences` (64 entries).
+3. **Tense:** `forcedTense` is used if set; otherwise `(Tense)rnd.Next(7)`.
+4. **Complement:** If `verb.Accepts != "none"`, the `complements` list is filtered to entries whose `Type` matches `verb.Accepts` (see [Complement compatibility](/reference/data-models#complement-compatibility)). A random compatible complement is chosen from the filtered list. If the list is empty, no complement is added.
+5. **Place:** If `includePlace` is `true` and `rnd.Next(2) == 0`, a random entry from `places` (31 entries) is appended.
+6. **Time:** If `includeTime` is `true` and `rnd.Next(2) == 0`, a random entry from `times` (36 entries) is appended.
+7. **English verb form:** `BuildEnglishVerb(subject, verb.English, tense)` is called.
+8. **Spanish verb form:** `BuildSpanishVerb(subject, verb.English, tense)` is called.
+9. **Assembly:** For `Normal` mode: `"Subject verbPhrase complement place time."` For `Question` mode: auxiliary inversion is applied (see below).
+
+### Question mode — auxiliary inversion
+
+In `Question` mode, the correct English auxiliary is selected per tense and placed before the subject:
+
+```csharp
+string aux = tense switch
+{
+    Tense.PresentSimple     => third ? "Does" : "Do",
+    Tense.PresentContinuous => third ? "Is" : isNos ? "Are" : "Am",
+    Tense.PastSimple        => "Did",
+    Tense.PastContinuous    => third ? "Was" : "Were",
+    Tense.FutureSimple      => "Will",
+    Tense.PresentPerfect    => third ? "Has" : "Have",
+    Tense.Conditional       => "Would",
+    _ => "Do"
+};
+```
+
+For compound tenses (`PresentContinuous`, `PastContinuous`, `PresentPerfect`), where the auxiliary is already embedded in `engVerb`, the engine strips the auxiliary from `engVerb` and uses only the participle/gerund component as the question verb:
+
+```csharp
+bool verbAlreadyFormed = tense == Tense.PresentContinuous
+                      || tense == Tense.PastContinuous
+                      || tense == Tense.PresentPerfect;
+
+string qVerb = verbAlreadyFormed
+    ? engVerb.Substring(engVerb.IndexOf(' ') + 1)
+    : verb.English;
+```
+
+The resulting question is assembled as: `"Aux Subject qVerb complement place time?"`
+
+---
+
+## `BuildEnglishVerb`
+
+```csharp
+static string BuildEnglishVerb(string subject, string verb, Tense tense)
+```
+
+Produces the correctly inflected English verb phrase for a given subject and tense. Does not include the subject itself in its return value.
+
+<ParamField body="subject" type="string" required>
+  The English subject string (e.g., `"I"`, `"She"`, `"The teacher"`). Used to determine person/number for auxiliary selection.
+</ParamField>
+
+<ParamField body="verb" type="string" required>
+  The bare English infinitive (e.g., `"eat"`, `"run"`). Irregular forms are looked up via `GetPast()`, `GetParticiple()`, and `GetGerund()`.
+</ParamField>
+
+<ParamField body="tense" type="Tense" required>
+  The tense to build. One of the 7 `Tense` enum values.
+</ParamField>
+
+**Returns:** The conjugated verb phrase string (without subject), e.g. `"eats"`, `"is eating"`, `"ate"`, `"was eating"`, `"will eat"`, `"has eaten"`, `"would eat"`.
+
+### Tense-by-tense formation
+
+| Tense | Return value | Notes |
+|---|---|---|
+| `PresentSimple` | `ConjugateEnglishPresent(subject, verb)` | Applies `-s`/`-es`/`-ies` for 3rd-person singular; bare verb for all others |
+| `PresentContinuous` | `"{be} {GetGerund(verb)}"` | `be` = `am`/`is`/`are` based on subject |
+| `PastSimple` | `GetPast(verb)` | Looks up `VerbEntry.Past`; falls back to `verb + "ed"` if not found |
+| `PastContinuous` | `"{was} {GetGerund(verb)}"` | `was` for I/she/he/it and 3rd-person; `were` for we/they/you |
+| `FutureSimple` | `"will {verb}"` | Uniform across all subjects |
+| `PresentPerfect` | `"{has/have} {GetParticiple(verb)}"` | `has` for 3rd-person singular; `have` for all others |
+| `Conditional` | `"would {verb}"` | Uniform across all subjects |
+
+### Auxiliary selection for `be`
+
+```csharp
+string be;
+if (third)
+    be = "is";
+else if (subjLower == "we" || subjLower == "they" || subjLower == "you")
+    be = "are";
+else
+    be = "am";
+```
+
+### Auxiliary selection for `was`/`were`
+
+```csharp
+string was;
+if (third || subjLower == "i" || subjLower == "he" || subjLower == "she" || subjLower == "it")
+    was = "was";
+else
+    was = "were";
+```
+
+### Irregular form lookup helpers
+
+- `GetPast(verb)` — returns `VerbEntry.Past` or `verb + "ed"` as fallback
+- `GetParticiple(verb)` — returns `VerbEntry.Participle` or `verb + "ed"` as fallback
+- `GetGerund(verb)` — returns `VerbEntry.Gerund` or `verb + "ing"` as fallback
+
+---
+
+## `BuildSpanishVerb`
+
+```csharp
+static string BuildSpanishVerb(string subject, string verb, Tense tense)
+```
+
+Produces the conjugated Spanish verb phrase for a given English subject and verb. Uses the `conjugaciones` dictionary as the primary source and falls back to programmatic conjugation when an entry is missing.
+
+<ParamField body="subject" type="string" required>
+  The English subject string. Used to determine person mapping: `"I"` → yo (first singular), `"we"` → nosotros (first plural), all others → él/ella (third singular).
+</ParamField>
+
+<ParamField body="verb" type="string" required>
+  The bare English infinitive, used as the key to look up `conjugaciones`.
+</ParamField>
+
+<ParamField body="tense" type="Tense" required>
+  The tense to build.
+</ParamField>
+
+**Returns:** The conjugated Spanish verb phrase string, e.g. `"como"`, `"estoy comiendo"`, `"comí"`, `"estaba comiendo"`, `"voy a comer"`, `"he comido"`, `"comería"`.
+
+### Person mapping
+
+| English subject(s) | Mapped person | Fields used |
+|---|---|---|
+| `"I"` | yo (1st singular) | `YoPres`, `YoPast` |
+| `"She"`, `"He"`, `"My mom"`, `"The teacher"`, and all other 3rd-person singulars | él/ella (3rd singular) | `ElPres`, `ElPast` |
+| `"We"`, `"They"`, `"You"` | nosotros/ellos/ustedes | `NosPres`, `NosPast` |
+
+The internal booleans are set as:
+
+```csharp
+bool isYo  = subject.ToLower() == "i";
+bool isNos = subject.ToLower() == "we";
+```
+
+Any subject that is neither `"i"` nor `"we"` (including `"they"` and `"you"`) uses the `El`/`El` (third-person) fields.
+
+### Tense-by-tense formation (when verb is in `conjugaciones`)
+
+| Tense | yo | él/ella | nosotros |
+|---|---|---|---|
+| `PresentSimple` | `c.YoPres` | `c.ElPres` | `c.NosPres` |
+| `PresentContinuous` | `"estoy {gerund}"` | `"está {gerund}"` | `"estamos {gerund}"` |
+| `PastSimple` | `c.YoPast` | `c.ElPast` | `c.NosPast` |
+| `PastContinuous` | `"estaba {gerund}"` | `"estaba {gerund}"` | `"estábamos {gerund}"` |
+| `FutureSimple` | `"voy a {inf}"` | `"va a {inf}"` | `"vamos a {inf}"` |
+| `PresentPerfect` | `"he {participle}"` | `"ha {participle}"` | `"hemos {participle}"` |
+| `Conditional` | `BuildConditional(inf, isYo, isNos, conditionalStems)` | — | — |
+
+Where `gerund` = `GetSpanishGerund(verb)`, `inf` = `GetSpanishInfinitive(verb)`, and `participle` = `GetSpanishPastParticiple(verb)`.
+
+### Spanish gerund computation (`GetSpanishGerund`)
+
+```csharp
+static string GetSpanishGerund(string verb)
+{
+    string inf = GetSpanishInfinitive(verb);
+    if (inf.EndsWith("ar")) return inf.Substring(0, inf.Length - 2) + "ando";
+    if (inf.EndsWith("er")) return inf.Substring(0, inf.Length - 2) + "iendo";
+    if (inf.EndsWith("ir")) return inf.Substring(0, inf.Length - 2) + "iendo";
+    
+    if (inf == "ir")    return "yendo";
+    if (inf == "leer")  return "leyendo";
+    if (inf == "creer") return "creyendo";
+    if (inf == "oír")   return "oyendo";
+    
+    return inf;
+}
+```
+
+### Spanish past participle computation (`GetSpanishPastParticiple`)
+
+Applies regular `-ado`/`-ido` endings and handles common irregular participles:
+
+```csharp
+static string GetSpanishPastParticiple(string verb)
+{
+    string inf = GetSpanishInfinitive(verb);
+    if (inf.EndsWith("ar"))              return inf.Substring(0, inf.Length - 2) + "ado";
+    if (inf.EndsWith("er") || inf.EndsWith("ir"))
+                                         return inf.Substring(0, inf.Length - 2) + "ido";
+    
+    if (inf == "abrir")   return "abierto";
+    if (inf == "cubrir")  return "cubierto";
+    if (inf == "decir")   return "dicho";
+    if (inf == "escribir")return "escrito";
+    if (inf == "hacer")   return "hecho";
+    if (inf == "morir")   return "muerto";
+    if (inf == "poner")   return "puesto";
+    if (inf == "romper")  return "roto";
+    if (inf == "ver")     return "visto";
+    if (inf == "volver")  return "vuelto";
+    
+    return inf;
+}
+```
+
+### Fallback for missing conjugations
+
+When a verb is not found in `conjugaciones`, `BuildSpanishVerb` constructs approximate Spanish forms directly from the Spanish infinitive's ending:
+
+```csharp
+if (!conjugaciones.TryGetValue(verb.ToLower(), out var c))
+{
+    string regularPresent = isYo ? inf.Replace("ar","o").Replace("er","o").Replace("ir","o")
+                         : isNos ? inf.Replace("ar","amos").Replace("er","emos").Replace("ir","imos")
+                         : inf.Replace("ar","a").Replace("er","e").Replace("ir","e");
+
+    string regularPast = isYo ? inf.Replace("ar","é").Replace("er","í").Replace("ir","í")
+                       : isNos ? inf.Replace("ar","amos").Replace("er","imos").Replace("ir","imos")
+                       : inf.Replace("ar","ó").Replace("er","ió").Replace("ir","ió");
+    // ... returns tense-appropriate form
+}
+```
+
+This fallback produces correct output for regular verbs but may be inaccurate for irregular verbs that lack a `conjugaciones` entry. 35 verbs in `verbList` are currently affected — see [Verb coverage gap](/reference/vocabulary#verb-coverage-gap) for the full list.
+
+### Conditional stem changes
+
+The `conditionalStems` dictionary inside `BuildSpanishVerb` maps Spanish infinitives to their irregular conditional stems before the `-ía`/`-íamos` ending is applied:
+
+```csharp
+var conditionalStems = new Dictionary<string, string>
+{
+    { "tener", "tendr" }, { "venir", "vendr" }, { "poder", "podr" },
+    { "poner", "pondr" }, { "salir", "saldr" }, { "hacer", "har"  },
+    { "decir", "dir"   }, { "querer","querr"  }, { "saber","sabr"  }
+};
+```
+
+`BuildConditional` applies the irregular stem if found, then appends the appropriate ending:
+
+```csharp
+static string BuildConditional(string inf, bool isYo, bool isNos,
+    Dictionary<string, string> stems)
+{
+    string stem = inf;
+    foreach (var kvp in stems)
+        if (inf.Contains(kvp.Key)) { stem = inf.Replace(kvp.Key, kvp.Value); break; }
+    
+    if (stem.EndsWith("ar"))
+        return isYo ? stem.Replace("ar","aría")
+             : isNos ? stem.Replace("ar","aríamos")
+             : stem.Replace("ar","aría");
+    if (stem.EndsWith("er"))
+        return isYo ? stem.Replace("er","ería")
+             : isNos ? stem.Replace("er","eríamos")
+             : stem.Replace("er","ería");
+    if (stem.EndsWith("ir"))
+        return isYo ? stem.Replace("ir","iría")
+             : isNos ? stem.Replace("ir","iríamos")
+             : stem.Replace("ir","iría");
+    
+    return isYo ? $"{inf}ía" : isNos ? $"{inf}íamos" : $"{inf}ía";
+}
+```
